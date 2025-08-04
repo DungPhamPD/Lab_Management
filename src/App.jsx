@@ -12,7 +12,13 @@ import DashboardAdmin from "./pages/home/dashboard-admin.jsx";
 import Sidebar from "./components/sidebar/sidebar.jsx";
 import Users from "./pages/users/users.jsx";
 import Task from "./pages/tasks/task.jsx";
+import Event from "./pages/event/event.jsx";
+import Device from "./pages/device/device.jsx";
+import Project from "./pages/project/project.jsx";
+import KPI from "./pages/kpi/kpi.jsx";
+import Calendar from "./pages/calendar/calendar.jsx";
 import { useState } from "react";
+import BorrowPage from "./pages/borrow/borrow";
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
@@ -62,6 +68,54 @@ function App() {
             element={
               <PrivateRoute>
                 <Task />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/event"
+            element={
+              <PrivateRoute>
+                <Event />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/device"
+            element={
+              <PrivateRoute>
+                <Device />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/project"
+            element={
+              <PrivateRoute>
+                <Project />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/kpi"
+            element={
+              <PrivateRoute>
+                <KPI />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/calendar"
+            element={
+              <PrivateRoute>
+                <Calendar />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/borrow"
+            element={
+              <PrivateRoute>
+                <BorrowPage isAdmin={true} currentUser="Nguyễn Văn A" />
               </PrivateRoute>
             }
           />

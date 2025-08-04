@@ -28,7 +28,6 @@ const Sidebar = ({ isSidebarOpen }) => {
     { key: "device", to: "/device", icon: <DevicesOtherIcon fontSize="medium" />, label: "Device" },
     { key: "borrow", to: "/borrow", icon: <AssignmentReturnIcon fontSize="medium" />, label: "Borrow" },
     { key: "kpi", to: "/kpi", icon: <AssessmentIcon fontSize="medium" />, label: "KPI" },
-    { key: "task2", to: "/task2", icon: <AssignmentIcon fontSize="medium" />, label: "Task" },
   ];
   const bottomMenus = [
     { key: "setting", to: "/setting", icon: <SettingsIcon fontSize="medium" />, label: "Setting" },
@@ -133,20 +132,26 @@ const Sidebar = ({ isSidebarOpen }) => {
         </ul>
       </div>
       {showConfirmation && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-64">
-            <p className="mb-4 text-center text-sm">
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div
+            className="bg-white rounded-2xl shadow-2xl px-10 py-8 w-[370px] max-w-full flex flex-col items-center"
+            style={{
+              border: "2.5px solid #60a5fa",
+              boxShadow: "0 8px 32px 0 rgba(80,102,255,0.15), 0 1.5px 8px 0 rgba(80,102,255,0.10)",
+            }}
+          >
+            <p className="mb-6 text-center text-base font-semibold text-gray-800">
               Bạn có chắc chắn muốn đăng xuất?
             </p>
-            <div className="flex justify-center gap-4">
+            <div className="flex justify-center gap-5 w-full">
               <button
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded"
+                className="bg-red-500 hover:bg-red-600 text-white px-7 py-2 rounded-full font-semibold text-base shadow transition"
                 onClick={confirmLogout}
               >
                 Đồng ý
               </button>
               <button
-                className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-1 rounded"
+                className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-7 py-2 rounded-full font-semibold text-base shadow transition"
                 onClick={cancelLogout}
               >
                 Hủy

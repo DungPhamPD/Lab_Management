@@ -372,7 +372,8 @@ const Task = () => {
                       ></div>
                     </div>
                     <span style={{ color: "#444", fontSize: 15, fontWeight: 500 }}>
-                      {task.progress}% hoàn thành
+                      {task.progress}% Hoàn Thành
+                      {task.progress === 100 && " (4 tiếng)"}
                     </span>
                   </div>
                   {task.attachments && task.attachments.length > 0 && (
