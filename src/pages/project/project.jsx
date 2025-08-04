@@ -62,7 +62,7 @@ export default function Project() {
 
   const handleDelete = (record) => {
     confirm({
-      title: "Xác nhận xóa",
+      title: "Xác nhận xóa.",
       icon: <ExclamationCircleOutlined />,
       content: `Bạn có chắc chắn muốn xóa dự án "${record.name}"?`,
       okText: "Xóa",
