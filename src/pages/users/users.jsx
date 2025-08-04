@@ -1,376 +1,578 @@
-import { useState } from "react";
-import Sidebar from "../../components/sidebar/sidebar";
+import React, { useState } from "react";
+import {
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Select,
+  Card,
+  Row,
+  Col,
+  Space,
+  Tag,
+  message,
+  Avatar,
+} from "antd";
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  ExclamationCircleOutlined,
+  UserOutlined,
+  MailOutlined,
+  PhoneOutlined,
+} from "@ant-design/icons";
 import Navbar from "../../components/navbar/navbar";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Modal, Box, TextField, Button, MenuItem, Select, InputLabel, FormControl } from "@mui/material";
 
-const statusColor = (status) =>
-  status === "Hoạt động"
-    ? "bg-emerald-400"
-    : status === "Tạm khóa"
-    ? "bg-yellow-400"
-    : status === "Khóa vĩnh viễn"
-    ? "bg-red-400"
-    : status === "Bảo trì"
-    ? "bg-blue-400"
-    : "bg-gray-300";
+const { Option } = Select;
+const { confirm } = Modal;
+
+const roleColor = {
+  Admin: "#ff4d4f",
+  "Quản lý": "#faad14",
+  "Nhân viên": "#13c2c2",
+  "Thực tập sinh": "#52c41a",
+};
+
+const statusColor = {
+  "Hoạt động": "#52c41a",
+  "Tạm dừng": "#faad14",
+  "Ngừng hoạt động": "#ff4d4f",
+};
+
+const roleOptions = ["Admin", "Quản lý", "Nhân viên", "Thực tập sinh"];
+const statusOptions = ["Hoạt động", "Tạm dừng", "Ngừng hoạt động"];
+
+// Dữ liệu mẫu
+const initialUsers = [
+  {
+    key: "1",
+    name: "Nguyễn Văn A",
+    email: "nguyenvana@company.com",
+    phone: "0901234567",
+    role: "Admin",
+    status: "Hoạt động",
+    department: "IT",
+  },
+  {
+    key: "2",
+    name: "Trần Thị B",
+    email: "tranthib@company.com",
+    phone: "0912345678",
+    role: "Quản lý",
+    status: "Hoạt động",
+    department: "Nhân sự",
+  },
+  {
+    key: "3",
+    name: "Lê Văn C",
+    email: "levanc@company.com",
+    phone: "0923456789",
+    role: "Nhân viên",
+    status: "Tạm dừng",
+    department: "Kế toán",
+  },
+];
 
 export default function Users() {
-  const [users, setUsers] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    role: "",
-    status: "",
-  });
-  const [editIndex, setEditIndex] = useState(null);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [deleteIndex, setDeleteIndex] = useState(null);
+  const [users, setUsers] = useState(initialUsers);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [form] = Form.useForm();
+  const [editForm] = Form.useForm();
+  const [editingRecord, setEditingRecord] = useState(null);
 
-  const handleOpen = () => {
-    setForm({
-      name: "",
-      email: "",
-      phone: "",
-      role: "",
-      status: "",
+  const handleAdd = () => {
+    form.resetFields();
+    setModalVisible(true);
+  };
+
+  const handleEdit = (record) => {
+    setEditingRecord(record);
+    editForm.setFieldsValue({
+      name: record.name,
+      email: record.email,
+      phone: record.phone,
+      role: record.role,
+      status: record.status,
+      department: record.department,
     });
-    setEditIndex(null);
-    setOpen(true);
+    setEditModalVisible(true);
   };
 
-  const handleEdit = (idx) => {
-    setForm(users[idx]);
-    setEditIndex(idx);
-    setOpen(true);
+  const handleDelete = (record) => {
+    confirm({
+      title: "Xác nhận xóa",
+      icon: <ExclamationCircleOutlined />,
+      content: `Bạn có chắc chắn muốn xóa người dùng "${record.name}"?`,
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
+      onOk() {
+        setUsers(users.filter((item) => item.key !== record.key));
+        message.success("Đã xóa người dùng thành công!");
+      },
+    });
   };
 
-  const handleClose = () => setOpen(false);
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleOk = () => {
+    form.validateFields().then((values) => {
+      const newUser = {
+        key: (users.length + 1).toString(),
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        role: values.role,
+        status: values.status,
+        department: values.department,
+      };
+      setUsers([...users, newUser]);
+      setModalVisible(false);
+      message.success("Thêm người dùng thành công!");
+    });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (form.name && form.email && form.phone && form.role && form.status) {
-      if (editIndex !== null) {
-        // Sửa
-        const newUsers = [...users];
-        newUsers[editIndex] = form;
-        setUsers(newUsers);
-      } else {
-        // Thêm mới
-        setUsers([...users, form]);
-      }
-      setOpen(false);
-    }
+  const handleEditOk = () => {
+    editForm.validateFields().then((values) => {
+      setUsers(
+        users.map((item) =>
+          item.key === editingRecord.key
+            ? {
+                ...item,
+                name: values.name,
+                email: values.email,
+                phone: values.phone,
+                role: values.role,
+                status: values.status,
+                department: values.department,
+              }
+            : item
+        )
+      );
+      setEditModalVisible(false);
+      setEditingRecord(null);
+      message.success("Cập nhật thông tin người dùng thành công!");
+    });
   };
 
-  const handleDelete = (idx) => {
-    setDeleteIndex(idx);
-    setConfirmOpen(true);
-  };
-
-  const confirmDelete = () => {
-    setUsers(users.filter((_, i) => i !== deleteIndex));
-    setConfirmOpen(false);
-    setDeleteIndex(null);
-  };
-
-  const cancelDelete = () => {
-    setConfirmOpen(false);
-    setDeleteIndex(null);
-  };
-
-  const isFormValid = form.name && form.email && form.phone && form.role && form.status;
-
-  return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
-        <Navbar />
-        <div className="flex-1 flex flex-col">
-          <div className="w-full max-w-7xl mx-auto px-4 py-8">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-              <h1 className="text-3xl font-bold mb-4 sm:mb-0">
-                Quản lí người dùng
-              </h1>
-              <button
-                className="bg-emerald-400 hover:bg-emerald-500 text-white px-6 py-2 rounded-full font-medium transition"
-                onClick={handleOpen}
-              >
-                Thêm người dùng
-              </button>
-            </div>
-            <div className="bg-white rounded-xl shadow border overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead>
-                  <tr className="text-gray-600 text-base border-b">
-                    <th className="py-4 px-4 text-left font-medium">Họ và tên</th>
-                    <th className="py-4 px-4 text-left font-medium">Email</th>
-                    <th className="py-4 px-4 text-left font-medium">Số điện thoại</th>
-                    <th className="py-4 px-4 text-left font-medium">Vai trò</th>
-                    <th className="py-4 px-4 text-left font-medium">Trạng thái</th>
-                    <th className="py-4 px-4 text-left font-medium">Hành động</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="text-center py-6 text-gray-400">
-                        Chưa có người dùng nào
-                      </td>
-                    </tr>
-                  ) : (
-                    users.map((u, idx) => (
-                      <tr
-                        key={idx}
-                        className="border-b last:border-b-0 hover:bg-gray-50 transition"
-                      >
-                        <td className="py-3 px-4">{u.name}</td>
-                        <td className="py-3 px-4">{u.email}</td>
-                        <td className="py-3 px-4">{u.phone}</td>
-                        <td className="py-3 px-4">{u.role}</td>
-                        <td className="py-3 px-4">
-                          <span
-                            className={`px-4 py-1 rounded-full text-white text-xs font-semibold ${statusColor(
-                              u.status
-                            )}`}
-                          >
-                            {u.status}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex gap-2">
-                            <button
-                              className="p-2 rounded hover:bg-gray-100 text-emerald-500"
-                              onClick={() => handleEdit(idx)}
-                            >
-                              <EditIcon fontSize="small" />
-                            </button>
-                            <button
-                              className="p-2 rounded hover:bg-gray-100 text-red-400"
-                              onClick={() => handleDelete(idx)}
-                            >
-                              <DeleteIcon fontSize="small" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-            {/* Pagination */}
-            <div className="flex justify-between items-center mt-4 text-gray-500 text-sm">
-              <span>Trang 1/1</span>
-              <div className="flex gap-2">
-                <button className="w-8 h-8 flex items-center justify-center rounded border hover:bg-gray-100">
-                  &lt;
-                </button>
-                <button className="w-8 h-8 flex items-center justify-center rounded border hover:bg-gray-100">
-                  &gt;
-                </button>
-              </div>
+  const columns = [
+    {
+      title: "STT",
+      key: "index",
+      width: 80,
+      render: (_, __, index) => index + 1,
+    },
+    {
+      title: "Người dùng",
+      key: "user",
+      width: 200,
+      render: (_, record) => (
+        <Space>
+          <Avatar
+            icon={<UserOutlined />}
+            style={{ backgroundColor: "#13c2c2" }}
+          />
+          <div>
+            <div style={{ fontWeight: 500 }}>{record.name}</div>
+            <div style={{ fontSize: "12px", color: "#8c8c8c" }}>
+              {record.department}
             </div>
           </div>
-        </div>
-      </div>
-      {/* Modal thêm người dùng */}
-      <Modal open={open} onClose={handleClose}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 420,
-            bgcolor: "#fff",
-            borderRadius: "18px",
-            boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.18), 0 1.5px 8px 0 rgba(80,102,255,0.10)",
-            border: "2px solid #60a5fa",
-            p: 0,
-            overflow: "visible",
+        </Space>
+      ),
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+      width: 200,
+      render: (email) => (
+        <Space>
+          <MailOutlined style={{ color: "#8c8c8c" }} />
+          {email}
+        </Space>
+      ),
+    },
+    {
+      title: "Điện thoại",
+      dataIndex: "phone",
+      key: "phone",
+      width: 120,
+      render: (phone) => (
+        <Space>
+          <PhoneOutlined style={{ color: "#8c8c8c" }} />
+          {phone}
+        </Space>
+      ),
+    },
+    {
+      title: "Vai trò",
+      dataIndex: "role",
+      key: "role",
+      width: 120,
+      render: (role) => (
+        <Tag
+          color={roleColor[role]}
+          style={{
+            borderRadius: "12px",
+            padding: "4px 12px",
+            fontWeight: "500",
+            border: "none",
           }}
         >
-          <div
+          {role}
+        </Tag>
+      ),
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      width: 120,
+      render: (status) => (
+        <Tag
+          color={statusColor[status]}
+          style={{
+            borderRadius: "12px",
+            padding: "4px 12px",
+            fontWeight: "500",
+            border: "none",
+          }}
+        >
+          {status}
+        </Tag>
+      ),
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      width: 100,
+      render: (_, record) => (
+        <Space>
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            style={{ color: "#1890ff" }}
+            onClick={() => handleEdit(record)}
+            title="Sửa"
+          />
+          <Button
+            type="text"
+            icon={<DeleteOutlined />}
+            style={{ color: "#ff4d4f" }}
+            onClick={() => handleDelete(record)}
+            title="Xóa"
+          />
+        </Space>
+      ),
+    },
+  ];
+
+  return (
+    <div
+      style={{
+        padding: "24px",
+        background: "#f5f5f5",
+        minHeight: "100vh",
+      }}
+    >
+      <Navbar />
+
+      {/* Card chính */}
+      <Card
+        style={{
+          borderRadius: 8,
+          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+          border: "1px solid #d9d9d9",
+          marginTop: 16,
+        }}
+        bodyStyle={{ padding: 0 }}
+      >
+        {/* Header */}
+        <div
+          style={{
+            padding: "16px 24px",
+            borderBottom: "1px solid #f0f0f0",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <h2
             style={{
-              borderTopLeftRadius: "18px",
-              borderTopRightRadius: "18px",
-              background: "linear-gradient(90deg, #f7fafd 60%, #e0e7ff 100%)",
-              padding: "24px 36px 12px 36px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              fontWeight: 700,
-              fontSize: 22,
-              color: "#22324a",
+              margin: 0,
+              fontSize: "18px",
+              fontWeight: "600",
+              color: "#262626",
+            }}
+          >
+            Quản lý người dùng
+          </h2>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={handleAdd}
+            style={{
+              borderRadius: 6,
+              height: 32,
+              fontSize: "14px",
+              background: "#13c2c2",
+              borderColor: "#13c2c2",
             }}
           >
             Thêm người dùng
-          </div>
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-4 px-8 py-6"
-            autoComplete="off"
-          >
-            <TextField
-              label="Họ và tên"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              fullWidth
-              required
-              size="medium"
-              margin="dense"
-            />
-            <TextField
-              label="Email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              fullWidth
-              required
-              size="medium"
-              margin="dense"
-              type="email"
-            />
-            <TextField
-              label="Số điện thoại"
-              name="phone"
-              value={form.phone}
-              onChange={handleChange}
-              fullWidth
-              required
-              size="medium"
-              margin="dense"
-              type="tel"
-            />
-            <FormControl fullWidth required margin="dense" size="medium">
-              <InputLabel>Vai trò</InputLabel>
-              <Select
-                label="Vai trò"
-                name="role"
-                value={form.role}
-                onChange={handleChange}
-              >
-                <MenuItem value="Admin">Admin</MenuItem>
-                <MenuItem value="Nhân viên">Nhân viên</MenuItem>
-				<MenuItem value="Quản lí">Quản lí</MenuItem>
-				<MenuItem value="Leader">Leader</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl fullWidth required margin="dense" size="medium">
-              <InputLabel>Trạng thái</InputLabel>
-              <Select
-                label="Trạng thái"
-                name="status"
-                value={form.status}
-                onChange={handleChange}
-              >
-                <MenuItem value="Hoạt động">Hoạt động</MenuItem>
-                <MenuItem value="Tạm khóa">Tạm khóa</MenuItem>
-				<MenuItem value="Khóa vĩnh viễn">Khóa vĩnh viễn</MenuItem>
-                <MenuItem value="Bảo trì">Bảo trì</MenuItem>
-              </Select>
-            </FormControl>
-            <div className="flex justify-end gap-3 mt-4">
-              <Button
-                onClick={handleClose}
-                variant="outlined"
-                color="inherit"
-                sx={{
-                  borderRadius: "999px",
-                  minWidth: 90,
-                  fontWeight: 600,
-                  textTransform: "none",
-                  borderColor: "#d1d5db",
-                }}
-              >
-                Hủy
-              </Button>
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={!isFormValid}
-                sx={{
-                  borderRadius: "999px",
-                  minWidth: 90,
-                  fontWeight: 600,
-                  textTransform: "none",
-                  background: "linear-gradient(90deg, #6366f1 0%, #60a5fa 100%)",
-                }}
-              >
-                Lưu
-              </Button>
-            </div>
-          </form>
-        </Box>
-      </Modal>
-      {/* Modal xác nhận xóa */}
-      <Modal open={confirmOpen} onClose={cancelDelete}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 400,
-            bgcolor: "#fff",
-            borderRadius: "12px",
-            boxShadow: "0 4px 16px 0 rgba(31, 38, 135, 0.18)",
-            p: 4,
+          </Button>
+        </div>
+
+        {/* Bảng dữ liệu */}
+        <div style={{ padding: "0 24px 24px 24px" }}>
+          <Table
+            columns={columns}
+            dataSource={users}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: false,
+              showQuickJumper: false,
+              showTotal: (total, range) =>
+                `Trang ${Math.ceil(range[0] / 10)}/${Math.ceil(total / 10)}`,
+              style: { textAlign: "center", marginTop: 16 },
+            }}
+            bordered={false}
+            size="middle"
+            style={{
+              marginTop: 16,
+            }}
+            rowClassName={() => "custom-row"}
+            locale={{
+              emptyText: "Chưa có người dùng nào",
+            }}
+          />
+        </div>
+
+        {/* Modal thêm người dùng */}
+        <Modal
+          title="Thêm người dùng mới"
+          open={modalVisible}
+          onOk={handleOk}
+          onCancel={() => setModalVisible(false)}
+          okText="Lưu"
+          cancelText="Hủy"
+          width={600}
+          okButtonProps={{
+            style: {
+              background: "#13c2c2",
+              borderColor: "#13c2c2",
+            },
           }}
         >
-          <div className="text-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">
-              Xác nhận xóa người dùng
-            </h2>
-            <p className="text-gray-500 text-sm">
-              Bạn có chắc chắn muốn xóa người dùng này? Hành động này không thể hoàn tác.
-            </p>
-          </div>
-          <div className="flex justify-center gap-4">
-            <Button
-              onClick={cancelDelete}
-              variant="outlined"
-              color="inherit"
-              sx={{
-                borderRadius: "999px",
-                minWidth: 90,
-                fontWeight: 600,
-                textTransform: "none",
-                borderColor: "#d1d5db",
-              }}
+          <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
+            <Form.Item
+              label="Họ và tên"
+              name="name"
+              rules={[{ required: true, message: "Vui lòng nhập họ và tên" }]}
             >
-              Hủy
-            </Button>
-            <Button
-              onClick={confirmDelete}
-              variant="contained"
-              color="error"
-              sx={{
-                borderRadius: "999px",
-                minWidth: 90,
-                fontWeight: 600,
-                textTransform: "none",
-                backgroundColor: "#ef4444",
-                "&:hover": {
-                  backgroundColor: "#dc2626",
-                },
-              }}
+              <Input placeholder="Nhập họ và tên" prefix={<UserOutlined />} />
+            </Form.Item>
+
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  label="Email"
+                  name="email"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập email" },
+                    { type: "email", message: "Email không hợp lệ" },
+                  ]}
+                >
+                  <Input placeholder="Nhập email" prefix={<MailOutlined />} />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="Số điện thoại"
+                  name="phone"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập số điện thoại" },
+                  ]}
+                >
+                  <Input
+                    placeholder="Nhập số điện thoại"
+                    prefix={<PhoneOutlined />}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  label="Phòng ban"
+                  name="department"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập phòng ban" },
+                  ]}
+                >
+                  <Input placeholder="Nhập phòng ban" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="Vai trò"
+                  name="role"
+                  rules={[{ required: true, message: "Vui lòng chọn vai trò" }]}
+                >
+                  <Select placeholder="Chọn vai trò">
+                    {roleOptions.map((role) => (
+                      <Option key={role} value={role}>
+                        <Tag color={roleColor[role]}>{role}</Tag>
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Form.Item
+              label="Trạng thái"
+              name="status"
+              rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}
             >
-              Xóa
-            </Button>
-          </div>
-        </Box>
-      </Modal>
+              <Select placeholder="Chọn trạng thái">
+                {statusOptions.map((status) => (
+                  <Option key={status} value={status}>
+                    <Tag color={statusColor[status]}>{status}</Tag>
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        {/* Modal sửa người dùng */}
+        <Modal
+          title="Sửa thông tin người dùng"
+          open={editModalVisible}
+          onOk={handleEditOk}
+          onCancel={() => {
+            setEditModalVisible(false);
+            setEditingRecord(null);
+          }}
+          okText="Cập nhật"
+          cancelText="Hủy"
+          width={600}
+          okButtonProps={{
+            style: {
+              background: "#1890ff",
+              borderColor: "#1890ff",
+            },
+          }}
+        >
+          <Form form={editForm} layout="vertical" style={{ marginTop: 16 }}>
+            <Form.Item
+              label="Họ và tên"
+              name="name"
+              rules={[{ required: true, message: "Vui lòng nhập họ và tên" }]}
+            >
+              <Input placeholder="Nhập họ và tên" prefix={<UserOutlined />} />
+            </Form.Item>
+
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  label="Email"
+                  name="email"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập email" },
+                    { type: "email", message: "Email không hợp lệ" },
+                  ]}
+                >
+                  <Input placeholder="Nhập email" prefix={<MailOutlined />} />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="Số điện thoại"
+                  name="phone"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập số điện thoại" },
+                  ]}
+                >
+                  <Input
+                    placeholder="Nhập số điện thoại"
+                    prefix={<PhoneOutlined />}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  label="Phòng ban"
+                  name="department"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập phòng ban" },
+                  ]}
+                >
+                  <Input placeholder="Nhập phòng ban" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="Vai trò"
+                  name="role"
+                  rules={[{ required: true, message: "Vui lòng chọn vai trò" }]}
+                >
+                  <Select placeholder="Chọn vai trò">
+                    {roleOptions.map((role) => (
+                      <Option key={role} value={role}>
+                        <Tag color={roleColor[role]}>{role}</Tag>
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Form.Item
+              label="Trạng thái"
+              name="status"
+              rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}
+            >
+              <Select placeholder="Chọn trạng thái">
+                {statusOptions.map((status) => (
+                  <Option key={status} value={status}>
+                    <Tag color={statusColor[status]}>{status}</Tag>
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Form>
+        </Modal>
+      </Card>
+
+      <style jsx>{`
+        .custom-row {
+          border-bottom: 1px solid #f0f0f0;
+        }
+        .custom-row:hover {
+          background-color: #fafafa;
+        }
+        .ant-table-thead > tr > th {
+          background-color: #fafafa;
+          border-bottom: 1px solid #f0f0f0;
+          font-weight: 600;
+          color: #262626;
+        }
+        .ant-pagination-item-active {
+          border-color: #13c2c2;
+          background-color: #13c2c2;
+        }
+        .ant-pagination-item-active a {
+          color: #fff;
+        }
+      `}</style>
     </div>
   );
 }
-

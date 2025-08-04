@@ -17,20 +17,72 @@ const Sidebar = ({ isSidebarOpen }) => {
   const navigate = useNavigate();
 
   const topMenus = [
-    { key: "dashboard", to: "/admin", icon: <DashboardIcon fontSize="medium" />, label: "Dashboard" },
-    { key: "calendar", to: "/calendar", icon: <CalendarTodayIcon fontSize="medium" />, label: "Calendar" },
-    { key: "tasks", to: "/tasks", icon: <AssignmentIcon fontSize="medium" />, label: "Tasks" },
-    { key: "user", to: "/users", icon: <PersonOutlineIcon fontSize="medium" />, label: "User" },
+    {
+      key: "dashboard",
+      to: "/admin",
+      icon: <DashboardIcon fontSize="small" />,
+      label: "Dashboard",
+    },
+    {
+      key: "calendar",
+      to: "/calendar",
+      icon: <CalendarTodayIcon fontSize="small" />,
+      label: "Calendar",
+    },
+    {
+      key: "tasks",
+      to: "/tasks",
+      icon: <AssignmentIcon fontSize="small" />,
+      label: "Tasks",
+    },
+    {
+      key: "user",
+      to: "/users",
+      icon: <PersonOutlineIcon fontSize="small" />,
+      label: "User",
+    },
   ];
+
   const middleMenus = [
-    { key: "project", to: "/project", icon: <WorkOutlineIcon fontSize="medium" />, label: "Project" },
-    { key: "event", to: "/event", icon: <EventNoteIcon fontSize="medium" />, label: "Event" },
-    { key: "device", to: "/device", icon: <DevicesOtherIcon fontSize="medium" />, label: "Device" },
-    { key: "borrow", to: "/borrow", icon: <AssignmentReturnIcon fontSize="medium" />, label: "Borrow" },
-    { key: "kpi", to: "/kpi", icon: <AssessmentIcon fontSize="medium" />, label: "KPI" },
+    {
+      key: "project",
+      to: "/project",
+      icon: <WorkOutlineIcon fontSize="small" />,
+      label: "Project",
+    },
+    {
+      key: "event",
+      to: "/event",
+      icon: <EventNoteIcon fontSize="small" />,
+      label: "Event",
+    },
+    {
+      key: "device",
+      to: "/device",
+      icon: <DevicesOtherIcon fontSize="small" />,
+      label: "Device",
+    },
+    {
+      key: "borrow",
+      to: "/borrow",
+      icon: <AssignmentReturnIcon fontSize="small" />,
+      label: "Borrow",
+    },
+    {
+      key: "kpi",
+      to: "/kpi",
+      icon: <AssessmentIcon fontSize="small" />,
+      label: "KPI",
+    },
   ];
+
   const bottomMenus = [
-    { key: "setting", to: "/setting", icon: <SettingsIcon fontSize="medium" />, label: "Setting" },
+    {
+      key: "setting",
+      to: "/setting",
+      icon: <SettingsIcon fontSize="small" />,
+      label: "Settings",
+    },
   ];
 
   const handleLogout = () => setShowConfirmation(true);
@@ -43,119 +95,188 @@ const Sidebar = ({ isSidebarOpen }) => {
   const cancelLogout = () => setShowConfirmation(false);
 
   return (
-    <div
-      className="bg-white flex flex-col transition-all duration-200 shadow"
-      style={{
-        width: 256,
-        height: "100vh",
-        position: "fixed",
-        left: 0,
-        top: 0,
-        zIndex: 100,
-      }}
-    >
-      <div className="flex flex-col h-full px-0 py-6">
-        <div className="flex items-center justify-center mb-8">
-          <span className="font-extrabold text-xl text-gray-800 tracking-wide drop-shadow">
-            Task Management
-          </span>
-        </div>
-        <ul className="flex flex-col gap-1 px-4">
-          {topMenus.map((item) => (
-            <li key={item.key}>
-              <NavLink
-                to={item.to}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition
-                  ${
-                    isActive
-                      ? "bg-blue-100 text-blue-700"
-                      : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
-                  }`
-                }
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-        <ul className="flex flex-col gap-1 px-4 mt-4">
-          {middleMenus.map((item) => (
-            <li key={item.key}>
-              <NavLink
-                to={item.to}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition
-                  ${
-                    isActive
-                      ? "bg-blue-100 text-blue-700"
-                      : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
-                  }`
-                }
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-        <ul className="flex flex-col gap-1 px-4 mt-4">
-          {bottomMenus.map((item) => (
-            <li key={item.key}>
-              <NavLink
-                to={item.to}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition
-                  ${
-                    isActive
-                      ? "bg-blue-100 text-blue-700"
-                      : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
-                  }`
-                }
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </NavLink>
-            </li>
-          ))}
-          <li>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:text-red-600 hover:bg-red-50 text-base w-full focus:outline-none rounded-lg font-medium transition"
-              style={{ background: "transparent" }}
-            >
-              <ExitToAppIcon fontSize="medium" />
-              <span>Logout</span>
-            </button>
-          </li>
-        </ul>
+    <div className="bg-slate-800 w-64 min-h-screen fixed left-0 top-0 z-50 flex flex-col">
+      {/* Header */}
+      <div className="px-6 py-8">
+        <h1 className="text-white text-xl font-bold">Task Management</h1>
       </div>
-      {showConfirmation && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div
-            className="bg-white rounded-2xl shadow-2xl px-10 py-8 w-[370px] max-w-full flex flex-col items-center"
-            style={{
-              border: "2.5px solid #60a5fa",
-              boxShadow: "0 8px 32px 0 rgba(80,102,255,0.15), 0 1.5px 8px 0 rgba(80,102,255,0.10)",
-            }}
+
+      {/* Navigation */}
+      <nav className="flex-1 px-4 space-y-1">
+        {/* Top Menu Items */}
+        {topMenus.map((item) => (
+          <NavLink
+            key={item.key}
+            to={item.to}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 group relative ${
+                isActive
+                  ? "bg-cyan-600/20 text-cyan-300 border-r-2 border-cyan-400"
+                  : "text-slate-300 hover:bg-slate-700/50 hover:text-cyan-200"
+              }`
+            }
           >
-            <p className="mb-6 text-center text-base font-semibold text-gray-800">
-              Bạn có chắc chắn muốn đăng xuất?
-            </p>
-            <div className="flex justify-center gap-5 w-full">
-              <button
-                className="bg-red-500 hover:bg-red-600 text-white px-7 py-2 rounded-full font-semibold text-base shadow transition"
-                onClick={confirmLogout}
-              >
-                Đồng ý
-              </button>
-              <button
-                className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-7 py-2 rounded-full font-semibold text-base shadow transition"
-                onClick={cancelLogout}
-              >
-                Hủy
-              </button>
+            {({ isActive }) => (
+              <>
+                {/* Icon */}
+                <div
+                  className={`${
+                    isActive
+                      ? "text-cyan-300"
+                      : "text-slate-400 group-hover:text-cyan-300"
+                  }`}
+                >
+                  {item.icon}
+                </div>
+
+                {/* Label */}
+                <span>{item.label}</span>
+
+                {/* Active indicator - glow effect */}
+                {isActive && (
+                  <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-400 to-cyan-600 rounded-l-full shadow-lg shadow-cyan-400/50"></div>
+                )}
+              </>
+            )}
+          </NavLink>
+        ))}
+
+        {/* Divider */}
+        <div className="py-4">
+          <div className="border-t border-slate-600/50"></div>
+        </div>
+
+        {/* Middle Menu Items */}
+        {middleMenus.map((item) => (
+          <NavLink
+            key={item.key}
+            to={item.to}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 group relative ${
+                isActive
+                  ? "bg-cyan-600/20 text-cyan-300 border-r-2 border-cyan-400"
+                  : "text-slate-300 hover:bg-slate-700/50 hover:text-cyan-200"
+              }`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                {/* Icon */}
+                <div
+                  className={`${
+                    isActive
+                      ? "text-cyan-300"
+                      : "text-slate-400 group-hover:text-cyan-300"
+                  }`}
+                >
+                  {item.icon}
+                </div>
+
+                {/* Label */}
+                <span>{item.label}</span>
+
+                {/* Active indicator */}
+                {isActive && (
+                  <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-400 to-cyan-600 rounded-l-full shadow-lg shadow-cyan-400/50"></div>
+                )}
+              </>
+            )}
+          </NavLink>
+        ))}
+
+        {/* Bottom Menu Items */}
+        <div className="pt-8">
+          {bottomMenus.map((item) => (
+            <NavLink
+              key={item.key}
+              to={item.to}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 group relative ${
+                  isActive
+                    ? "bg-cyan-600/20 text-cyan-300 border-r-2 border-cyan-400"
+                    : "text-slate-300 hover:bg-slate-700/50 hover:text-cyan-200"
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  {/* Icon */}
+                  <div
+                    className={`${
+                      isActive
+                        ? "text-cyan-300"
+                        : "text-slate-400 group-hover:text-cyan-300"
+                    }`}
+                  >
+                    {item.icon}
+                  </div>
+
+                  {/* Label */}
+                  <span>{item.label}</span>
+
+                  {/* Active indicator */}
+                  {isActive && (
+                    <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-400 to-cyan-600 rounded-l-full shadow-lg shadow-cyan-400/50"></div>
+                  )}
+                </>
+              )}
+            </NavLink>
+          ))}
+
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 group w-full text-left text-slate-300 hover:bg-red-500/10 hover:text-red-300"
+          >
+            <div className="text-slate-400 group-hover:text-red-400">
+              <ExitToAppIcon fontSize="small" />
+            </div>
+            <span>Logout</span>
+          </button>
+        </div>
+      </nav>
+
+      {/* User Profile Section */}
+      <div className="p-4 border-t border-slate-600/50">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-full flex items-center justify-center shadow-lg">
+            <PersonOutlineIcon fontSize="small" className="text-white" />
+          </div>
+          <div>
+            <p className="text-white text-sm font-medium">Admin User</p>
+            <p className="text-cyan-300 text-xs">Vice President</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Logout Confirmation Modal */}
+      {showConfirmation && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60]">
+          <div className="bg-slate-800 border border-slate-600 rounded-xl shadow-2xl p-6 w-96 max-w-[90vw] mx-4">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-500/20 border border-red-400/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <ExitToAppIcon className="text-red-400" fontSize="large" />
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">
+                Confirm Logout
+              </h3>
+              <p className="text-slate-300 mb-6">
+                Are you sure you want to logout from the system?
+              </p>
+              <div className="flex justify-center gap-3">
+                <button
+                  onClick={confirmLogout}
+                  className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-red-500/25"
+                >
+                  Logout
+                </button>
+                <button
+                  onClick={cancelLogout}
+                  className="bg-slate-600 hover:bg-slate-500 text-slate-200 px-6 py-2 rounded-lg font-medium transition-all duration-200 border border-slate-500"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>
